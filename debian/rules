@@ -1,0 +1,22 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+include /usr/share/dpkg/architecture.mk
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	dh_auto_configure -- \
+		-DLIB_SUFFIX=/$(DEB_HOST_MULTIARCH) \
+		-DSFML_BUILD_DOC=ON \
+		-DSFML_PKGCONFIG_INSTALL_PREFIX=/usr/lib/$(DEB_HOST_MULTIARCH)/pkgconfig
+
+override_dh_auto_build:
+	dh_auto_build -- all doc
+
+override_dh_installexamples:
+	dh_installexamples -X.gitignore
